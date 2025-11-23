@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Color Palette -->
+    <color name="primary">#03b333</color>
+    <color name="primary_dark">#028a28</color>
+    <color name="primary_light">#e6f7ea</color>
+
+    <!-- Standard Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Accent & Utility Colors -->
+    <color name="accent">#FFC107</color> <!-- An accent color that complements green -->
+    <color name="grey">#9E9E9E</color>
+    <color name="light_grey">#F5F5F5</color>
+</resources>
