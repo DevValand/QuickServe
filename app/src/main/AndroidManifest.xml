@@ -16,7 +16,7 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.Material3.DayNight.NoActionBar">
+            android:theme="@style/Theme.QuickServe.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

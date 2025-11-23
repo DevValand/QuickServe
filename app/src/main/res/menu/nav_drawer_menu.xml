@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <group android:id="@+id/group_dashboards">
+        <item
+            android:id="@+id/nav_manager_dashboard"
+            android:icon="@drawable/ic_dashboard"
+            android:title="Manager Dashboard" />
+        <item
+            android:id="@+id/nav_waiter_dashboard"
+            android:icon="@drawable/ic_tables"
+            android:title="Waiter Dashboard" />
+        <item
+            android:id="@+id/nav_chef_dashboard"
+            android:icon="@drawable/ic_orders"
+            android:title="Chef Dashboard" />
+    </group>
+
     <group android:id="@+id/group_admin">
         <item
             android:id="@+id/nav_user_management"

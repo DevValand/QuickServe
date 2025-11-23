@@ -13,4 +13,8 @@
     <color name="accent">#FFC107</color> <!-- An accent color that complements green -->
     <color name="grey">#9E9E9E</color>
     <color name="light_grey">#F5F5F5</color>
+
+    <!-- Semantic Colors -->
+    <color name="danger_red">#D32F2F</color>
+
 </resources>

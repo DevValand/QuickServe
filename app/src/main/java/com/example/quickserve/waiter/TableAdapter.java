@@ -38,23 +38,29 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
         holder.tableNumber.setText("Table " + table.getTableNumber());
         holder.tableStatus.setText(table.getStatus());
 
-        // Set background color based on status
-        int colorResId;
+        int backgroundColor;
+        int textColor;
+
         switch (table.getStatus()) {
             case "Occupied":
-                colorResId = R.color.accent;
+                backgroundColor = ContextCompat.getColor(context, R.color.accent);
+                textColor = ContextCompat.getColor(context, R.color.black);
                 break;
             case "Preparing":
-                colorResId = R.color.primary_light;
+                backgroundColor = ContextCompat.getColor(context, R.color.primary_light);
+                textColor = ContextCompat.getColor(context, R.color.primary_dark);
                 break;
             default: // Empty
-                colorResId = R.color.white;
+                backgroundColor = ContextCompat.getColor(context, R.color.white);
+                textColor = ContextCompat.getColor(context, R.color.black);
+                break;
         }
-        holder.tableCard.setCardBackgroundColor(ContextCompat.getColor(context, colorResId));
+        holder.tableCard.setCardBackgroundColor(backgroundColor);
+        holder.tableNumber.setTextColor(textColor);
+        holder.tableStatus.setTextColor(textColor);
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, TakeOrderActivity.class);
-            // Pass the table number to the next activity
             intent.putExtra("TABLE_NUMBER", table.getTableNumber());
             context.startActivity(intent);
         });

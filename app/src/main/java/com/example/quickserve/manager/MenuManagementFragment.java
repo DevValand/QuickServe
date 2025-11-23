@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,36 +17,36 @@ import com.example.quickserve.R;
 import com.example.quickserve.data.MenuRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MenuManagementActivity extends AppCompatActivity {
+public class MenuManagementFragment extends Fragment {
 
     private List<MenuItem> menuItems;
     private MenuAdapter adapter;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_management);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_menu_management, container, false);
 
-        RecyclerView menuRecyclerView = findViewById(R.id.menu_recycler_view);
-        menuRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView menuRecyclerView = view.findViewById(R.id.menu_recycler_view);
+        menuRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Get menu items from the central repository
         menuItems = MenuRepository.getMenuItems();
-
-        adapter = new MenuAdapter((ArrayList<MenuItem>) menuItems);
+        
+        // Correctly initialize the adapter without the cast
+        adapter = new MenuAdapter(menuItems);
         menuRecyclerView.setAdapter(adapter);
 
-        FloatingActionButton fabAddMenuItem = findViewById(R.id.fab_add_menu_item);
-        fabAddMenuItem.setOnClickListener(view -> showAddMenuItemDialog());
+        FloatingActionButton fabAddMenuItem = view.findViewById(R.id.fab_add_menu_item);
+        fabAddMenuItem.setOnClickListener(v -> showAddMenuItemDialog());
+
+        return view;
     }
 
     private void showAddMenuItemDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_add_menu_item, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_menu_item, null);
         builder.setView(dialogView);
 
         final EditText nameEditText = dialogView.findViewById(R.id.et_new_item_name);
@@ -58,12 +61,8 @@ public class MenuManagementActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(priceStr)) {
                 double price = Double.parseDouble(priceStr);
                 MenuItem newItem = new MenuItem(name, category, price);
-                
-                // Add the new item to the central repository
                 MenuRepository.addMenuItem(newItem);
-                
-                // Notify the adapter that the data has changed
-                adapter.notifyDataSetChanged();
+                adapter.notifyItemInserted(menuItems.size() - 1);
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());

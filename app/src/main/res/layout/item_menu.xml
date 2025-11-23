@@ -47,7 +47,7 @@
             android:id="@+id/tv_menu_item_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="$12.99"
+            android:text="₹ 12.99"
             android:textSize="16sp" />
 
     </LinearLayout>

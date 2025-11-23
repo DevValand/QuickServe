@@ -9,14 +9,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickserve.R;
 
-import java.util.ArrayList;
+import java.util.List; // Changed from ArrayList
 import java.util.Locale;
 
 public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder> {
 
-    private ArrayList<MenuItem> menuList;
+    private List<MenuItem> menuList; // Changed from ArrayList
 
-    public MenuAdapter(ArrayList<MenuItem> menuList) {
+    public MenuAdapter(List<MenuItem> menuList) { // Changed from ArrayList
         this.menuList = menuList;
     }
 
@@ -32,7 +32,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
         MenuItem menuItem = menuList.get(position);
         holder.itemName.setText(menuItem.getName());
         holder.itemCategory.setText(menuItem.getCategory());
-        holder.itemPrice.setText(String.format(Locale.getDefault(), "$%.2f", menuItem.getPrice()));
+        holder.itemPrice.setText(String.format(Locale.getDefault(), "₹%.2f", menuItem.getPrice()));
     }
 
     @Override

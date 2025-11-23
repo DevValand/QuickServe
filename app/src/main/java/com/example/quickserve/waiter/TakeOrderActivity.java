@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickserve.R;
+import com.example.quickserve.data.MenuRepository;
 import com.example.quickserve.manager.MenuItem;
 
 import java.util.ArrayList;
@@ -25,11 +26,8 @@ public class TakeOrderActivity extends AppCompatActivity {
         RecyclerView menuRecyclerView = findViewById(R.id.menu_items_recycler_view);
         menuRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Using static menu data for now
-        ArrayList<MenuItem> menuItems = new ArrayList<>();
-        menuItems.add(new MenuItem("Paneer Butter Masala", "Main Course", 12.99));
-        menuItems.add(new MenuItem("Vegetable Biryani", "Main Course", 10.50));
-        menuItems.add(new MenuItem("Garlic Naan", "Breads", 3.50));
+        // Fetch menu items from the central repository
+        ArrayList<MenuItem> menuItems = (ArrayList<MenuItem>) MenuRepository.getMenuItems();
 
         OrderMenuAdapter adapter = new OrderMenuAdapter(this, menuItems);
         menuRecyclerView.setAdapter(adapter);

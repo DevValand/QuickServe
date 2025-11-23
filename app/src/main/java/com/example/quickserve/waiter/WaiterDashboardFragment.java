@@ -12,10 +12,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickserve.R;
+import com.example.quickserve.data.TableRepository;
 
 import java.util.ArrayList;
 
 public class WaiterDashboardFragment extends Fragment {
+
+    private TableAdapter adapter;
 
     @Nullable
     @Override
@@ -25,18 +28,21 @@ public class WaiterDashboardFragment extends Fragment {
         RecyclerView tablesRecyclerView = view.findViewById(R.id.tables_recycler_view);
         tablesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        // Create static data for now
-        ArrayList<Table> tables = new ArrayList<>();
-        tables.add(new Table(1, "Empty"));
-        tables.add(new Table(2, "Occupied"));
-        tables.add(new Table(3, "Preparing"));
-        tables.add(new Table(4, "Empty"));
-        tables.add(new Table(5, "Empty"));
-        tables.add(new Table(6, "Occupied"));
+        // Get tables from the central repository
+        ArrayList<Table> tables = (ArrayList<Table>) TableRepository.getTables();
 
-        TableAdapter adapter = new TableAdapter(getContext(), tables);
+        adapter = new TableAdapter(getContext(), tables);
         tablesRecyclerView.setAdapter(adapter);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh the adapter every time the fragment is shown
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 }

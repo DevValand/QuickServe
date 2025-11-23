@@ -4,9 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,13 +35,7 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.Orde
     @Override
     public void onBindViewHolder(@NonNull OrderMenuViewHolder holder, int position) {
         MenuItem menuItem = menuList.get(position);
-        holder.itemName.setText(menuItem.getName());
-        holder.itemPrice.setText(String.format(Locale.getDefault(), "$%.2f", menuItem.getPrice()));
-
-        holder.addToOrderButton.setOnClickListener(v -> {
-            // In a real app, you'd add this to a list of ordered items
-            Toast.makeText(context, menuItem.getName() + " added to order", Toast.LENGTH_SHORT).show();
-        });
+        holder.bind(menuItem);
     }
 
     @Override
@@ -50,15 +43,36 @@ public class OrderMenuAdapter extends RecyclerView.Adapter<OrderMenuAdapter.Orde
         return menuList.size();
     }
 
-    public static class OrderMenuViewHolder extends RecyclerView.ViewHolder {
-        TextView itemName, itemPrice;
-        Button addToOrderButton;
+    static class OrderMenuViewHolder extends RecyclerView.ViewHolder {
+        TextView itemName, itemPrice, quantity;
+        ImageButton increaseButton, decreaseButton;
+        private int currentQuantity = 0;
 
         public OrderMenuViewHolder(@NonNull View itemView) {
             super(itemView);
             itemName = itemView.findViewById(R.id.tv_menu_item_name);
             itemPrice = itemView.findViewById(R.id.tv_menu_item_price);
-            addToOrderButton = itemView.findViewById(R.id.btn_add_to_order);
+            quantity = itemView.findViewById(R.id.tv_quantity);
+            increaseButton = itemView.findViewById(R.id.btn_increase_quantity);
+            decreaseButton = itemView.findViewById(R.id.btn_decrease_quantity);
+        }
+
+        void bind(final MenuItem menuItem) {
+            itemName.setText(menuItem.getName());
+            itemPrice.setText(String.format(Locale.getDefault(), "₹%.2f", menuItem.getPrice()));
+            quantity.setText(String.valueOf(currentQuantity));
+
+            increaseButton.setOnClickListener(v -> {
+                currentQuantity++;
+                quantity.setText(String.valueOf(currentQuantity));
+            });
+
+            decreaseButton.setOnClickListener(v -> {
+                if (currentQuantity > 0) {
+                    currentQuantity--;
+                    quantity.setText(String.valueOf(currentQuantity));
+                }
+            });
         }
     }
 }

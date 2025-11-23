@@ -12,12 +12,12 @@
         android:id="@+id/tv_bill_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
         android:text="Final Bill - Table 1"
         android:textColor="@color/primary"
         android:textSize="28sp"
-        android:textStyle="bold" 
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="24dp"/>
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bill_items_recycler_view"
@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="$20.49" />
+            android:text="₹0.00" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -56,14 +56,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tax (10%)" />
+            android:text="Tax" />
 
         <TextView
             android:id="@+id/tv_tax"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="$2.05" />
+            android:text="₹0.00" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -83,16 +83,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="$22.54"
+            android:text="₹0.00"
             android:textSize="22sp"
             android:textStyle="bold"/>
     </RelativeLayout>
 
     <Button
-        android:id="@+id/btn_close_bill"
+        android:id="@+id/btn_finish"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Close" />
+        android:text="Finish &amp; Clear Table" />
 
 </LinearLayout>

@@ -8,4 +8,19 @@
     </style>
 
     <style name="Theme.QuickServe" parent="Base.Theme.QuickServe" />
+
+    <!-- Custom Style for Bottom Navigation -->
+    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemIconSize">28dp</item>
+        <item name="itemIconTint">@color/bottom_nav_color_selector</item>
+        <item name="itemTextColor">@color/bottom_nav_color_selector</item>
+        <item name="android:background">@color/primary_light</item>
+    </style>
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.QuickServe.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/primary</item>
+        <item name="android:statusBarColor">@color/primary</item>
+    </style>
+
 </resources>
