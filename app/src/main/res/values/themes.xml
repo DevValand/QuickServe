@@ -1,26 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.QuickServe" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
+        <item name="android:statusBarColor">@color/primary</item>
     </style>
 
     <style name="Theme.QuickServe" parent="Base.Theme.QuickServe" />
 
-    <!-- Custom Style for Bottom Navigation -->
+    <style name="Theme.QuickServe.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/primary</item>
+        <item name="android:statusBarColor">@color/primary</item>
+    </style>
+
+    <!-- Corrected Style for Bottom Navigation -->
     <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="itemIconSize">28dp</item>
         <item name="itemIconTint">@color/bottom_nav_color_selector</item>
         <item name="itemTextColor">@color/bottom_nav_color_selector</item>
-        <item name="android:background">@color/primary_light</item>
-    </style>
-
-    <!-- Splash Screen Theme -->
-    <style name="Theme.QuickServe.Splash" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/primary</item>
-        <item name="android:statusBarColor">@color/primary</item>
+        <!-- Use a standard surface color that adapts to the theme -->
+        <item name="android:background">?attr/colorSurfaceContainer</item>
     </style>
 
 </resources>

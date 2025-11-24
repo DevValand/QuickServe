@@ -38,9 +38,12 @@
         android:layout_marginTop="40dp"
         android:hint="Email or Username"
         android:inputType="textEmailAddress"
-        android:padding="12dp"
+        android:padding="16dp"
         android:background="@drawable/edit_text_background"
-        app:layout_constraintTop_toBottomOf="@+id/tv_app_title"
+        android:drawableStart="@android:drawable/ic_dialog_email"
+        android:drawablePadding="12dp"
+        android:drawableTint="@color/primary"
+        app:layout_constraintTop_toBottomOf="@id/tv_app_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -51,8 +54,11 @@
         android:layout_marginTop="16dp"
         android:hint="Password"
         android:inputType="textPassword"
-        android:padding="12dp"
+        android:padding="16dp"
         android:background="@drawable/edit_text_background"
+        android:drawableStart="@android:drawable/ic_lock_lock"
+        android:drawablePadding="12dp"
+        android:drawableTint="@color/primary"
         app:layout_constraintTop_toBottomOf="@+id/et_username"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

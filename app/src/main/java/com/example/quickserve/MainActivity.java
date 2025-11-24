@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        toggle.syncState(); // Ensure hamburger is shown initially
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -68,11 +68,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (userRole) {
             case "WAITER":
                 loadFragment(new WaiterDashboardFragment(), false, "Waiter Dashboard");
-                navigationView.setCheckedItem(R.id.nav_waiter_dashboard);
+                navigationView.setCheckedItem(R.id.nav_tables);
                 break;
             case "CHEF":
                 loadFragment(new ChefDashboardFragment(), false, "Chef Dashboard");
-                navigationView.setCheckedItem(R.id.nav_chef_dashboard);
+                navigationView.setCheckedItem(R.id.nav_orders);
                 break;
             default: // MANAGER
                 loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
@@ -100,25 +100,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView navHeaderRole = navigationView.getHeaderView(0).findViewById(R.id.nav_header_role);
         navHeaderRole.setText(userRole.substring(0, 1).toUpperCase() + userRole.substring(1).toLowerCase());
 
-        navMenu.findItem(R.id.nav_manager_dashboard).setVisible(false);
-        navMenu.findItem(R.id.nav_waiter_dashboard).setVisible(false);
-        navMenu.findItem(R.id.nav_chef_dashboard).setVisible(false);
-        navMenu.setGroupVisible(R.id.group_admin, false);
-
-        switch (userRole) {
-            case "MANAGER":
-                bottomNav.setVisibility(View.VISIBLE);
-                navMenu.findItem(R.id.nav_manager_dashboard).setVisible(true);
-                navMenu.setGroupVisible(R.id.group_admin, true);
-                break;
-            case "WAITER":
-                bottomNav.setVisibility(View.GONE);
-                navMenu.findItem(R.id.nav_waiter_dashboard).setVisible(true);
-                break;
-            case "CHEF":
-                bottomNav.setVisibility(View.GONE);
-                navMenu.findItem(R.id.nav_chef_dashboard).setVisible(true);
-                break;
+        // Show all dashboard links for the Manager, only specific ones for others
+        if ("MANAGER".equals(userRole)) {
+            bottomNav.setVisibility(View.VISIBLE);
+            navMenu.setGroupVisible(R.id.group_dashboards, true);
+            navMenu.setGroupVisible(R.id.group_admin, true);
+        } else {
+            bottomNav.setVisibility(View.GONE);
+            navMenu.setGroupVisible(R.id.group_dashboards, false);
+            navMenu.setGroupVisible(R.id.group_admin, false);
+            // Only make their specific dashboard item visible
+            if("WAITER".equals(userRole)) navMenu.findItem(R.id.nav_tables).setVisible(true);
+            if("CHEF".equals(userRole)) navMenu.findItem(R.id.nav_orders).setVisible(true);
         }
     }
 
@@ -130,42 +123,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.nav_manager_dashboard);
         } else if (itemId == R.id.nav_orders) {
             loadFragment(new ChefDashboardFragment(), false, "Kitchen Orders");
-            navigationView.setCheckedItem(R.id.nav_chef_dashboard);
+            navigationView.setCheckedItem(R.id.nav_orders);
         } else if (itemId == R.id.nav_tables) {
             loadFragment(new WaiterDashboardFragment(), false, "Table Status");
-            navigationView.setCheckedItem(R.id.nav_waiter_dashboard);
+            navigationView.setCheckedItem(R.id.nav_tables);
         }
         return true;
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        int itemId = item.getItemId();
-        if (itemId == R.id.nav_manager_dashboard) {
-            loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
-            bottomNav.setSelectedItemId(R.id.nav_dashboard);
-        } else if (itemId == R.id.nav_waiter_dashboard) {
-            loadFragment(new WaiterDashboardFragment(), false, "Table Status");
-        } else if (itemId == R.id.nav_chef_dashboard) {
-            loadFragment(new ChefDashboardFragment(), false, "Kitchen Orders");
-        } else if (itemId == R.id.nav_user_management) {
-            loadFragment(new UserManagementFragment(), true, "User Management");
-        } else if (itemId == R.id.nav_menu_management) {
-            loadFragment(new MenuManagementFragment(), true, "Menu Management");
-        } else if (itemId == R.id.nav_settings) {
-            loadFragment(new SettingsFragment(), true, "Settings");
-        } else if (itemId == R.id.nav_logout) {
-            showLogoutConfirmationDialog();
-        }
         drawerLayout.closeDrawer(GravityCompat.START);
+        new android.os.Handler().postDelayed(() -> {
+            int itemId = item.getItemId();
+            if (item.getGroupId() == R.id.group_dashboards) {
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+            
+            if (itemId == R.id.nav_manager_dashboard) {
+                loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
+                if (userRole.equals("MANAGER")) bottomNav.setSelectedItemId(R.id.nav_dashboard);
+            } else if (itemId == R.id.nav_tables) {
+                loadFragment(new WaiterDashboardFragment(), false, "Table Status");
+                if (userRole.equals("MANAGER")) bottomNav.setSelectedItemId(R.id.nav_tables);
+            } else if (itemId == R.id.nav_orders) {
+                loadFragment(new ChefDashboardFragment(), false, "Kitchen Orders");
+                if (userRole.equals("MANAGER")) bottomNav.setSelectedItemId(R.id.nav_orders);
+            } else if (itemId == R.id.nav_user_management) {
+                loadFragment(new UserManagementFragment(), true, "User Management");
+            } else if (itemId == R.id.nav_menu_management) {
+                loadFragment(new MenuManagementFragment(), true, "Menu Management");
+            } else if (itemId == R.id.nav_settings) {
+                loadFragment(new SettingsFragment(), true, "Settings");
+            } else if (itemId == R.id.nav_logout) {
+                showLogoutConfirmationDialog();
+            }
+        }, 250);
         return true;
     }
 
     private void loadFragment(Fragment fragment, boolean addToBackStack, String title) {
         getSupportActionBar().setTitle(title);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        var transaction = fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment);
+        var transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment);
         if (addToBackStack) {
             transaction.addToBackStack(title);
         }

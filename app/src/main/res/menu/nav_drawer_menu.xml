@@ -7,13 +7,13 @@
             android:icon="@drawable/ic_dashboard"
             android:title="Manager Dashboard" />
         <item
-            android:id="@+id/nav_waiter_dashboard"
-            android:icon="@drawable/ic_tables"
-            android:title="Waiter Dashboard" />
+            android:id="@+id/nav_tables"
+            android:icon="@drawable/ic_table" 
+            android:title="Tables" />
         <item
-            android:id="@+id/nav_chef_dashboard"
+            android:id="@+id/nav_orders"
             android:icon="@drawable/ic_orders"
-            android:title="Chef Dashboard" />
+            android:title="Orders" />
     </group>
 
     <group android:id="@+id/group_admin">
@@ -23,7 +23,7 @@
             android:title="User Management" />
         <item
             android:id="@+id/nav_menu_management"
-            android:icon="@drawable/ic_restaurant_menu"
+            android:icon="@drawable/ic_menu"
             android:title="Menu Management" />
     </group>
 

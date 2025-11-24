@@ -16,7 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-public class UserManagementActivity extends AppCompatActivity {
+public class UserManagementActivity extends AppCompatActivity implements UserAdapter.OnItemClickListener {
 
     private ArrayList<User> users = new ArrayList<>();
     private UserAdapter adapter;
@@ -33,7 +33,8 @@ public class UserManagementActivity extends AppCompatActivity {
         users.add(new User("John Doe", "Waiter"));
         users.add(new User("Jane Smith", "Chef"));
 
-        adapter = new UserAdapter(users);
+        // Correctly pass the listener to the adapter with the correct argument order
+        adapter = new UserAdapter(users, this);
         usersRecyclerView.setAdapter(adapter);
 
         FloatingActionButton fabAddUser = findViewById(R.id.fab_add_user);
@@ -68,5 +69,11 @@ public class UserManagementActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         builder.create().show();
+    }
+
+    @Override
+    public void onItemClick(User user, int position) {
+        // This is a dummy implementation since this Activity is no longer in active use.
+        // The real logic is in UserManagementFragment.
     }
 }

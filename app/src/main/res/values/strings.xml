@@ -7,4 +7,11 @@
         <item>Waiter</item>
         <item>Chef</item>
     </string-array>
+
+    <string-array name="menu_categories">
+        <item>Starters</item>
+        <item>Main Course</item>
+        <item>Dessert</item>
+        <item>Beverages</item>
+    </string-array>
 </resources>

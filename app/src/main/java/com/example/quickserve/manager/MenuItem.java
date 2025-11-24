@@ -22,4 +22,17 @@ public class MenuItem {
     public double getPrice() {
         return price;
     }
+
+    // --- Add the missing setter methods ---
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 }

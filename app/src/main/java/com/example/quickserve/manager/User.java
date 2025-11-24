@@ -16,4 +16,13 @@ public class User {
     public String getRole() {
         return role;
     }
+
+    // --- Add the missing setter methods ---
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

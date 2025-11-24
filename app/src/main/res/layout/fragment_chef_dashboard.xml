@@ -5,15 +5,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Kitchen Orders"
-        android:textColor="@color/primary"
-        android:textSize="28sp"
-        android:textStyle="bold" 
-        android:layout_marginBottom="24dp"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/orders_recycler_view"
         android:layout_width="match_parent"

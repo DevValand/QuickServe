@@ -1,11 +1,16 @@
 package com.example.quickserve.manager;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickserve.R;
@@ -14,26 +19,30 @@ import java.util.ArrayList;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
-    private ArrayList<User> userList;
+    public interface OnItemClickListener {
+        void onItemClick(User user, int position);
+    }
 
-    public UserAdapter(ArrayList<User> userList) {
+    private ArrayList<User> userList;
+    private final OnItemClickListener listener;
+    private Context context;
+
+    public UserAdapter(ArrayList<User> userList, OnItemClickListener listener) {
         this.userList = userList;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, parent, false);
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.item_user, parent, false);
         return new UserViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        User user = userList.get(position);
-        holder.userName.setText(user.getName());
-        holder.userRole.setText(user.getRole());
-
-        // Here you could set different icons based on the role, for example
+        holder.bind(userList.get(position), listener, position);
     }
 
     @Override
@@ -41,7 +50,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         return userList.size();
     }
 
-    public static class UserViewHolder extends RecyclerView.ViewHolder {
+    class UserViewHolder extends RecyclerView.ViewHolder {
         TextView userName, userRole;
         ImageView userIcon, deleteIcon;
 
@@ -51,6 +60,27 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             userRole = itemView.findViewById(R.id.tv_user_role);
             userIcon = itemView.findViewById(R.id.iv_user_icon);
             deleteIcon = itemView.findViewById(R.id.iv_delete_user);
+        }
+
+        public void bind(final User user, final OnItemClickListener listener, final int position) {
+            userName.setText(user.getName());
+            userRole.setText(user.getRole());
+
+            itemView.setOnClickListener(v -> listener.onItemClick(user, position));
+
+            deleteIcon.setOnClickListener(v -> {
+                new AlertDialog.Builder(context)
+                    .setTitle("Delete User")
+                    .setMessage("Are you sure you want to delete " + user.getName() + "?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        userList.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, userList.size());
+                        Toast.makeText(context, "User Deleted", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            });
         }
     }
 }
