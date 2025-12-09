@@ -9,11 +9,11 @@
         <item
             android:id="@+id/nav_tables"
             android:icon="@drawable/ic_table" 
-            android:title="Tables" />
+            android:title="Waiter Dashboard" />
         <item
             android:id="@+id/nav_orders"
             android:icon="@drawable/ic_orders"
-            android:title="Orders" />
+            android:title="Chef Dashboard" />
     </group>
 
     <group android:id="@+id/group_admin">

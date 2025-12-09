@@ -65,20 +65,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void loadInitialFragment() {
-        switch (userRole) {
-            case "WAITER":
-                loadFragment(new WaiterDashboardFragment(), false, "Waiter Dashboard");
-                navigationView.setCheckedItem(R.id.nav_tables);
-                break;
-            case "CHEF":
-                loadFragment(new ChefDashboardFragment(), false, "Chef Dashboard");
-                navigationView.setCheckedItem(R.id.nav_orders);
-                break;
-            default: // MANAGER
-                loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
-                navigationView.setCheckedItem(R.id.nav_manager_dashboard);
-                break;
-        }
+        // Default to Manager Dashboard for all roles
+        loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
+        navigationView.setCheckedItem(R.id.nav_manager_dashboard);
     }
 
     private void setupToolbarNavigation() {
@@ -100,19 +89,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView navHeaderRole = navigationView.getHeaderView(0).findViewById(R.id.nav_header_role);
         navHeaderRole.setText(userRole.substring(0, 1).toUpperCase() + userRole.substring(1).toLowerCase());
 
-        // Show all dashboard links for the Manager, only specific ones for others
-        if ("MANAGER".equals(userRole)) {
-            bottomNav.setVisibility(View.VISIBLE);
-            navMenu.setGroupVisible(R.id.group_dashboards, true);
-            navMenu.setGroupVisible(R.id.group_admin, true);
-        } else {
-            bottomNav.setVisibility(View.GONE);
-            navMenu.setGroupVisible(R.id.group_dashboards, false);
-            navMenu.setGroupVisible(R.id.group_admin, false);
-            // Only make their specific dashboard item visible
-            if("WAITER".equals(userRole)) navMenu.findItem(R.id.nav_tables).setVisible(true);
-            if("CHEF".equals(userRole)) navMenu.findItem(R.id.nav_orders).setVisible(true);
-        }
+        // Show all dashboard links for all roles
+        bottomNav.setVisibility(View.VISIBLE);
+        navMenu.setGroupVisible(R.id.group_dashboards, true);
+        navMenu.setGroupVisible(R.id.group_admin, true);
     }
 
     private boolean onBottomNavigationItemSelected(MenuItem item) {
@@ -142,13 +122,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             
             if (itemId == R.id.nav_manager_dashboard) {
                 loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
-                if (userRole.equals("MANAGER")) bottomNav.setSelectedItemId(R.id.nav_dashboard);
+                bottomNav.setSelectedItemId(R.id.nav_dashboard);
             } else if (itemId == R.id.nav_tables) {
                 loadFragment(new WaiterDashboardFragment(), false, "Table Status");
-                if (userRole.equals("MANAGER")) bottomNav.setSelectedItemId(R.id.nav_tables);
+                bottomNav.setSelectedItemId(R.id.nav_tables);
             } else if (itemId == R.id.nav_orders) {
                 loadFragment(new ChefDashboardFragment(), false, "Kitchen Orders");
-                if (userRole.equals("MANAGER")) bottomNav.setSelectedItemId(R.id.nav_orders);
+                bottomNav.setSelectedItemId(R.id.nav_orders);
             } else if (itemId == R.id.nav_user_management) {
                 loadFragment(new UserManagementFragment(), true, "User Management");
             } else if (itemId == R.id.nav_menu_management) {

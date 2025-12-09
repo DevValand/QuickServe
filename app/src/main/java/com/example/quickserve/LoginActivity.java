@@ -14,10 +14,8 @@ public class LoginActivity extends AppCompatActivity {
 
         Button loginButton = findViewById(R.id.btn_login);
 
-        // For now, any login attempt defaults to the Manager role
         loginButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("USER_ROLE", "MANAGER");
             startActivity(intent);
             finish();
         });

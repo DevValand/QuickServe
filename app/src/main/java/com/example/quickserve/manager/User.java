@@ -17,7 +17,6 @@ public class User {
         return role;
     }
 
-    // --- Add the missing setter methods ---
     public void setName(String name) {
         this.name = name;
     }

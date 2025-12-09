@@ -17,7 +17,6 @@ public class Table {
         return status;
     }
 
-    // --- Add the missing setter method ---
     public void setStatus(String status) {
         this.status = status;
     }

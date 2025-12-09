@@ -23,7 +23,6 @@ public class MenuItem {
         return price;
     }
 
-    // --- Add the missing setter methods ---
     public void setName(String name) {
         this.name = name;
     }
