@@ -27,6 +27,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
@@ -47,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         userRole = getIntent().getStringExtra("USER_ROLE");
+        if (userRole != null) {
+            userRole = userRole.trim().toUpperCase(Locale.US);
+        }
 
         // Handle cases where user might not be passed correctly
         if (currentUser == null) {
@@ -100,6 +105,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 loadFragment(new ChefDashboardFragment(), false, "Chef Dashboard");
                 navigationView.setCheckedItem(R.id.nav_orders);
                 break;
+            default:
+                // Fallback to waiter dashboard if an unknown role slips through
+                userRole = "WAITER";
+                loadFragment(new WaiterDashboardFragment(), false, "Waiter Dashboard");
+                navigationView.setCheckedItem(R.id.nav_tables);
+                break;
         }
     }
 
@@ -119,23 +130,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupUIForRole() {
         Menu navMenu = navigationView.getMenu();
+        boolean isManager = "MANAGER".equals(userRole);
+        boolean isWaiter = "WAITER".equals(userRole);
+        boolean isChef = "CHEF".equals(userRole);
 
-        if ("MANAGER".equals(userRole)) {
+        if (isManager) {
             // Manager sees all dashboards and admin tools
             bottomNav.setVisibility(View.VISIBLE);
             navMenu.findItem(R.id.nav_manager_dashboard).setVisible(true);
-            navMenu.findItem(R.id.nav_tables).setVisible(true);
-            navMenu.findItem(R.id.nav_orders).setVisible(true);
+            navMenu.findItem(R.id.nav_tables).setVisible(false); // hide waiter dashboard entry for manager
+            navMenu.findItem(R.id.nav_orders).setVisible(false); // hide chef dashboard entry for manager
             navMenu.findItem(R.id.nav_user_management).setVisible(true);
             navMenu.findItem(R.id.nav_menu_management).setVisible(true);
             navMenu.findItem(R.id.nav_table_management).setVisible(true);
             navMenu.setGroupVisible(R.id.group_admin, true);
+
+            // Hide bottom navigation items not meant for manager
+            Menu bottomMenu = bottomNav.getMenu();
+            bottomMenu.findItem(R.id.nav_tables).setVisible(false);
+            bottomMenu.findItem(R.id.nav_orders).setVisible(false);
         } else {
             // Other roles only see their own dashboard
             bottomNav.setVisibility(View.GONE);
             navMenu.findItem(R.id.nav_manager_dashboard).setVisible(false);
-            navMenu.findItem(R.id.nav_tables).setVisible("WAITER".equals(userRole));
-            navMenu.findItem(R.id.nav_orders).setVisible("CHEF".equals(userRole));
+            navMenu.findItem(R.id.nav_tables).setVisible(isWaiter);
+            navMenu.findItem(R.id.nav_orders).setVisible(isChef);
             navMenu.findItem(R.id.nav_user_management).setVisible(false);
             navMenu.findItem(R.id.nav_menu_management).setVisible(false);
             navMenu.findItem(R.id.nav_table_management).setVisible(false);

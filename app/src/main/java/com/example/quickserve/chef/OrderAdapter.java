@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickserve.R;
-import com.example.quickserve.manager.MenuItem;
+import com.example.quickserve.data.OrderRepository;
 
 import java.util.List;
 
@@ -62,51 +62,61 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
         void bind(final Order order) {
             tableNumber.setText("Table " + order.getTableNumber());
-            orderStatus.setText(order.getStatus());
+            orderStatus.setText(capitalize(order.getStatus()));
 
             StringBuilder itemsText = new StringBuilder();
-            for (MenuItem item : order.getItems()) {
-                itemsText.append("- ").append(item.getName()).append("\n");
+            if (order.getItems() != null) {
+                for (OrderLine item : order.getItems()) {
+                    itemsText.append(item.getQuantity()).append(" x ").append(item.getName()).append("\n");
+                }
             }
             orderItems.setText(itemsText.toString().trim());
 
-            switch (order.getStatus()) {
-                case "Pending":
+            switch (order.getStatus() == null ? "" : order.getStatus().toLowerCase()) {
+                case "pending":
                     pendingButtons.setVisibility(View.VISIBLE);
                     markAsReadyButton.setVisibility(View.GONE);
                     orderStatus.setBackgroundResource(R.color.primary_light);
+                    orderStatus.setTextColor(context.getResources().getColor(R.color.black));
                     break;
-                case "Preparing":
+                case "preparing":
                     pendingButtons.setVisibility(View.GONE);
                     markAsReadyButton.setVisibility(View.VISIBLE);
                     orderStatus.setBackgroundResource(R.color.accent);
+                    orderStatus.setTextColor(context.getResources().getColor(R.color.black));
                     break;
-                case "Ready":
+                case "prepared":
                     pendingButtons.setVisibility(View.GONE);
                     markAsReadyButton.setVisibility(View.GONE);
                     orderStatus.setBackgroundResource(R.color.primary);
                     orderStatus.setTextColor(context.getResources().getColor(R.color.white));
                     break;
+                default:
+                    pendingButtons.setVisibility(View.GONE);
+                    markAsReadyButton.setVisibility(View.GONE);
+                    orderStatus.setBackgroundResource(R.color.light_grey);
+                    orderStatus.setTextColor(context.getResources().getColor(R.color.black));
             }
 
             acceptButton.setOnClickListener(v -> {
-                order.setStatus("Preparing");
-                notifyItemChanged(getAdapterPosition());
+                OrderRepository.updateStatus(order, "preparing");
                 Toast.makeText(context, "Order for Table " + order.getTableNumber() + " is now preparing.", Toast.LENGTH_SHORT).show();
             });
 
             rejectButton.setOnClickListener(v -> {
-                // In a real app, you might notify the waiter or remove the order
-                orderList.remove(getAdapterPosition());
-                notifyItemRemoved(getAdapterPosition());
-                Toast.makeText(context, "Order for Table " + order.getTableNumber() + " rejected.", Toast.LENGTH_SHORT).show();
+                OrderRepository.updateStatus(order, "served");
+                Toast.makeText(context, "Order for Table " + order.getTableNumber() + " cleared.", Toast.LENGTH_SHORT).show();
             });
 
             markAsReadyButton.setOnClickListener(v -> {
-                order.setStatus("Ready");
-                notifyItemChanged(getAdapterPosition());
+                OrderRepository.updateStatus(order, "prepared");
                 Toast.makeText(context, "Order for Table " + order.getTableNumber() + " is ready!", Toast.LENGTH_SHORT).show();
             });
+        }
+
+        private String capitalize(String status) {
+            if (status == null || status.isEmpty()) return "";
+            return status.substring(0, 1).toUpperCase() + status.substring(1);
         }
     }
 }

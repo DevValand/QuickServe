@@ -9,15 +9,30 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickserve.R;
-import com.example.quickserve.manager.MenuItem;
+import com.example.quickserve.data.OrderRepository;
+import com.example.quickserve.data.TableRepository;
+import com.example.quickserve.waiter.Table;
+import com.example.quickserve.waiter.TableAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ChefDashboardFragment extends Fragment {
+
+    private TableAdapter tableAdapter;
+    private OrderAdapter orderAdapter;
+    private final TableRepository.TablesListener tablesListener = tables -> {
+        if (tableAdapter != null) {
+            // Ensure adapter has the latest list reference
+            tableAdapter.notifyDataSetChanged();
+        }
+    };
+    private final OrderRepository.OrdersListener ordersListener = orders -> {
+        if (orderAdapter != null) orderAdapter.notifyDataSetChanged();
+    };
 
     @Nullable
     @Override
@@ -27,14 +42,27 @@ public class ChefDashboardFragment extends Fragment {
         RecyclerView ordersRecyclerView = view.findViewById(R.id.orders_recycler_view);
         ordersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Create static data for now
-        ArrayList<Order> orders = new ArrayList<>();
-        orders.add(new Order(2, Arrays.asList(new MenuItem("Vegetable Biryani", "", 0)), "Pending"));
-        orders.add(new Order(5, Arrays.asList(new MenuItem("Paneer Butter Masala", "", 0), new MenuItem("Garlic Naan", "", 0)), "Pending"));
+        RecyclerView tablesRecyclerView = view.findViewById(R.id.tables_recycler_view);
+        tablesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        OrderAdapter adapter = new OrderAdapter(getContext(), orders);
-        ordersRecyclerView.setAdapter(adapter);
+        ArrayList<Order> orders = (ArrayList<Order>) OrderRepository.getOrders();
+        orderAdapter = new OrderAdapter(getContext(), orders);
+        ordersRecyclerView.setAdapter(orderAdapter);
+        OrderRepository.addListener(ordersListener);
+
+        // Shared table list view for chef
+        ArrayList<Table> tables = (ArrayList<Table>) TableRepository.getTables();
+        tableAdapter = new TableAdapter(getContext(), tables);
+        tablesRecyclerView.setAdapter(tableAdapter);
+        TableRepository.addListener(tablesListener);
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        TableRepository.removeListener(tablesListener);
+        OrderRepository.removeListener(ordersListener);
     }
 }

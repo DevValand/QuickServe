@@ -58,10 +58,8 @@ public class BillActivity extends AppCompatActivity {
         // --- End of Fix ---
 
         finishButton.setOnClickListener(v -> {
-            Table table = TableRepository.findTableByNumber(tableNumber);
-            if (table != null) {
-                table.setStatus("Empty");
-            }
+            // Update table status in Firestore
+            TableRepository.updateTableStatus(tableNumber, "empty");
             Toast.makeText(this, "Table " + tableNumber + " has been cleared.", Toast.LENGTH_SHORT).show();
             finish();
         });

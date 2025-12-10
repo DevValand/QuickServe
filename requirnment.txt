@@ -1,0 +1,22 @@
+ Restaurent Management system
+
+Where There are 3 users
+
+1) Manager
+2) Waiter
+3) chef
+
+Where There is one common Login Screen for all (Not Signup Only Login)
+
+And Manager Contains Below Screens
+1) Dashboard Screen Which Contains the Total numbers of Customer attend, total Number of Recent Orders
+2) Crud for User Management  like Chef, Waiter and also for menuItems and Tables
+
+And Waiter & chef Contains Below Screens
+1) Table Screen Which Display the All Tables with it's status like(Empty, Occupied, Order Taken, Preparing Order,Order prepared,Served) 
+2) A popup Design Where chef will take orders from the Occupied table where all the menuitem is diaplyed on that popup and by click on confirm the table status will change to the  Order Taken
+3) Chef has the same Screen as the the number 1). Which display the table screen with it's table
+where There is a different popup design for Chef that the summary of order will be displayed their and by clicking Accept order The status of table will be changes to the Preparing Order 
+and the Screen of table will Going to update in real time for Chef and Waiter
+now Where the Order has prepared Chef will again change the table status to the Order Prepared
+and Chef Delivers the Order and change the status to the Order Served

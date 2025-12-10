@@ -1,26 +1,48 @@
 package com.example.quickserve.chef;
 
-import com.example.quickserve.manager.MenuItem;
-
 import java.util.List;
 
+/**
+ * Firestore-backed order model.
+ */
 public class Order {
+    private String id;
     private int tableNumber;
-    private List<MenuItem> items;
-    private String status; // e.g., "Pending", "Preparing", "Ready"
+    private List<OrderLine> items;
+    private String status; // pending, preparing, prepared
 
-    public Order(int tableNumber, List<MenuItem> items, String status) {
+    // No-arg for Firestore
+    public Order() {}
+
+    public Order(String id, int tableNumber, List<OrderLine> items, String status) {
+        this.id = id;
         this.tableNumber = tableNumber;
         this.items = items;
         this.status = status;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getTableNumber() {
         return tableNumber;
     }
 
-    public List<MenuItem> getItems() {
+    public void setTableNumber(int tableNumber) {
+        this.tableNumber = tableNumber;
+    }
+
+    public List<OrderLine> getItems() {
         return items;
+    }
+
+    public void setItems(List<OrderLine> items) {
+        this.items = items;
     }
 
     public String getStatus() {
@@ -31,3 +53,4 @@ public class Order {
         this.status = status;
     }
 }
+

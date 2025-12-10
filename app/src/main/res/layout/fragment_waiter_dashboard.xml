@@ -5,9 +5,25 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Waiter Dashboard"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:paddingBottom="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Manage tables, take orders from occupied tables."
+        android:textSize="14sp"
+        android:paddingBottom="12dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tables_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </LinearLayout>

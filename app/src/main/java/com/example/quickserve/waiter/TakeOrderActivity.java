@@ -14,8 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickserve.R;
 import com.example.quickserve.data.MenuRepository;
-import com.example.quickserve.data.TableRepository;
 import com.example.quickserve.manager.MenuItem;
+import com.example.quickserve.data.TableRepository;
+import com.example.quickserve.data.OrderRepository;
 import com.example.quickserve.waiter.adapter.ExpandableMenuAdapter;
 import com.example.quickserve.waiter.adapter.OrderSummaryAdapter;
 import com.example.quickserve.waiter.model.ExpandableMenuItem;
@@ -38,6 +39,9 @@ public class TakeOrderActivity extends AppCompatActivity {
 
         tableNumber = getIntent().getIntExtra("TABLE_NUMBER", 0);
 
+        // Set table status to "occupied" when waiter starts taking order
+        TableRepository.updateTableStatus(tableNumber, "occupied");
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Take Order - Table " + tableNumber);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
@@ -54,6 +58,8 @@ public class TakeOrderActivity extends AppCompatActivity {
 
         Button finalizeBillButton = findViewById(R.id.btn_finalize_bill);
         finalizeBillButton.setOnClickListener(v -> {
+            // Update table status to "empty" when finalizing bill
+            TableRepository.updateTableStatus(tableNumber, "empty");
             Intent intent = new Intent(this, BillActivity.class);
             intent.putExtra("TABLE_NUMBER", tableNumber);
             startActivity(intent);
@@ -80,12 +86,7 @@ public class TakeOrderActivity extends AppCompatActivity {
         final AlertDialog dialog = builder.create();
 
         dialogView.findViewById(R.id.btn_confirm_order).setOnClickListener(v -> {
-            // --- This is the new, correct logic ---
-            Table table = TableRepository.findTableByNumber(tableNumber);
-            if (table != null) {
-                table.setStatus("Occupied");
-            }
-            // --- End of new logic ---
+            OrderRepository.createOrder(tableNumber, orderedItems);
 
             Toast.makeText(this, "Order for Table " + tableNumber + " placed successfully!", Toast.LENGTH_SHORT).show();
             dialog.dismiss();

@@ -17,8 +17,8 @@ import java.util.ArrayList;
 
 public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHolder> {
 
-    private ArrayList<Table> tableList;
-    private Context context;
+    private final ArrayList<Table> tableList;
+    private final Context context;
 
     public TableAdapter(Context context, ArrayList<Table> tableList) {
         this.context = context;
@@ -43,12 +43,18 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
 
         switch (table.getStatus()) {
             case "Occupied":
+            case "Order Taken":
                 backgroundColor = ContextCompat.getColor(context, R.color.accent);
                 textColor = ContextCompat.getColor(context, R.color.black);
                 break;
             case "Preparing":
                 backgroundColor = ContextCompat.getColor(context, R.color.primary_light);
                 textColor = ContextCompat.getColor(context, R.color.primary_dark);
+                break;
+            case "Prepared":
+            case "Served":
+                backgroundColor = ContextCompat.getColor(context, R.color.primary);
+                textColor = ContextCompat.getColor(context, R.color.white);
                 break;
             default: // Empty
                 backgroundColor = ContextCompat.getColor(context, R.color.white);

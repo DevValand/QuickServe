@@ -19,6 +19,9 @@ import java.util.ArrayList;
 public class WaiterDashboardFragment extends Fragment {
 
     private TableAdapter adapter;
+    private final TableRepository.TablesListener tablesListener = tables -> {
+        if (adapter != null) adapter.notifyDataSetChanged();
+    };
 
     @Nullable
     @Override
@@ -33,16 +36,14 @@ public class WaiterDashboardFragment extends Fragment {
 
         adapter = new TableAdapter(getContext(), tables);
         tablesRecyclerView.setAdapter(adapter);
+        TableRepository.addListener(tablesListener);
 
         return view;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        // Refresh the adapter every time the fragment is shown
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
+        TableRepository.removeListener(tablesListener);
     }
 }
