@@ -25,6 +25,10 @@
             android:id="@+id/nav_menu_management"
             android:icon="@drawable/ic_menu"
             android:title="Menu Management" />
+        <item
+            android:id="@+id/nav_table_management"
+            android:icon="@drawable/ic_table"
+            android:title="Table Management" />
     </group>
 
     <group android:id="@+id/group_general">

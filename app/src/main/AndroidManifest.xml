@@ -23,14 +23,9 @@
             </intent-filter>
         </activity>
 
-        <!-- Main, Login & Settings -->
+        <!-- Main & Login -->
         <activity android:name=".MainActivity" android:exported="false" />
         <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".SettingsActivity" android:exported="false" />
-
-        <!-- Manager Activities -->
-        <activity android:name=".manager.UserManagementActivity" android:exported="false" />
-        <activity android:name=".manager.MenuManagementActivity" android:exported="false" />
 
         <!-- Waiter Activities -->
         <activity android:name=".waiter.TakeOrderActivity" android:exported="false" />

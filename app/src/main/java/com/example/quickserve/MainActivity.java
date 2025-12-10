@@ -24,6 +24,8 @@ import com.example.quickserve.manager.UserManagementFragment;
 import com.example.quickserve.waiter.WaiterDashboardFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
     private String userRole;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +45,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         userRole = getIntent().getStringExtra("USER_ROLE");
-        if (userRole == null) userRole = "MANAGER";
+
+        // Handle cases where user might not be passed correctly
+        if (currentUser == null) {
+            // This shouldn't happen, but as a safeguard, send back to login
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+        if (userRole == null) userRole = "WAITER"; // Default to least privileged role
 
         drawerLayout = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
-        toggle.syncState(); // Ensure hamburger is shown initially
+        toggle.syncState();
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -57,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNav.setOnItemSelectedListener(this::onBottomNavigationItemSelected);
 
         setupToolbarNavigation();
+        updateNavHeader();
         setupUIForRole();
 
         if (savedInstanceState == null) {
@@ -64,10 +77,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void updateNavHeader() {
+        View headerView = navigationView.getHeaderView(0);
+        TextView navHeaderRole = headerView.findViewById(R.id.nav_header_role);
+        TextView navHeaderEmail = headerView.findViewById(R.id.nav_header_email);
+
+        navHeaderRole.setText(userRole);
+        navHeaderEmail.setText(currentUser.getEmail());
+    }
+
     private void loadInitialFragment() {
-        // Default to Manager Dashboard for all roles
-        loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
-        navigationView.setCheckedItem(R.id.nav_manager_dashboard);
+        switch (userRole) {
+            case "MANAGER":
+                loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
+                navigationView.setCheckedItem(R.id.nav_manager_dashboard);
+                break;
+            case "WAITER":
+                loadFragment(new WaiterDashboardFragment(), false, "Waiter Dashboard");
+                navigationView.setCheckedItem(R.id.nav_tables);
+                break;
+            case "CHEF":
+                loadFragment(new ChefDashboardFragment(), false, "Chef Dashboard");
+                navigationView.setCheckedItem(R.id.nav_orders);
+                break;
+        }
     }
 
     private void setupToolbarNavigation() {
@@ -86,26 +119,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupUIForRole() {
         Menu navMenu = navigationView.getMenu();
-        TextView navHeaderRole = navigationView.getHeaderView(0).findViewById(R.id.nav_header_role);
-        navHeaderRole.setText(userRole.substring(0, 1).toUpperCase() + userRole.substring(1).toLowerCase());
 
-        // Show all dashboard links for all roles
-        bottomNav.setVisibility(View.VISIBLE);
-        navMenu.setGroupVisible(R.id.group_dashboards, true);
-        navMenu.setGroupVisible(R.id.group_admin, true);
+        if ("MANAGER".equals(userRole)) {
+            // Manager sees all dashboards and admin tools
+            bottomNav.setVisibility(View.VISIBLE);
+            navMenu.findItem(R.id.nav_manager_dashboard).setVisible(true);
+            navMenu.findItem(R.id.nav_tables).setVisible(true);
+            navMenu.findItem(R.id.nav_orders).setVisible(true);
+            navMenu.findItem(R.id.nav_user_management).setVisible(true);
+            navMenu.findItem(R.id.nav_menu_management).setVisible(true);
+            navMenu.findItem(R.id.nav_table_management).setVisible(true);
+            navMenu.setGroupVisible(R.id.group_admin, true);
+        } else {
+            // Other roles only see their own dashboard
+            bottomNav.setVisibility(View.GONE);
+            navMenu.findItem(R.id.nav_manager_dashboard).setVisible(false);
+            navMenu.findItem(R.id.nav_tables).setVisible("WAITER".equals(userRole));
+            navMenu.findItem(R.id.nav_orders).setVisible("CHEF".equals(userRole));
+            navMenu.findItem(R.id.nav_user_management).setVisible(false);
+            navMenu.findItem(R.id.nav_menu_management).setVisible(false);
+            navMenu.findItem(R.id.nav_table_management).setVisible(false);
+            navMenu.setGroupVisible(R.id.group_admin, false);
+        }
     }
 
     private boolean onBottomNavigationItemSelected(MenuItem item) {
+        // This is primarily for the manager now
         getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         int itemId = item.getItemId();
         if (itemId == R.id.nav_dashboard) {
             loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
             navigationView.setCheckedItem(R.id.nav_manager_dashboard);
         } else if (itemId == R.id.nav_orders) {
-            loadFragment(new ChefDashboardFragment(), false, "Kitchen Orders");
+            loadFragment(new ChefDashboardFragment(), false, "Chef Dashboard");
             navigationView.setCheckedItem(R.id.nav_orders);
         } else if (itemId == R.id.nav_tables) {
-            loadFragment(new WaiterDashboardFragment(), false, "Table Status");
+            loadFragment(new WaiterDashboardFragment(), false, "Waiter Dashboard");
             navigationView.setCheckedItem(R.id.nav_tables);
         }
         return true;
@@ -122,19 +171,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             
             if (itemId == R.id.nav_manager_dashboard) {
                 loadFragment(new ManagerDashboardFragment(), false, "Manager Dashboard");
-                bottomNav.setSelectedItemId(R.id.nav_dashboard);
+                if ("MANAGER".equals(userRole)) bottomNav.setSelectedItemId(R.id.nav_dashboard);
             } else if (itemId == R.id.nav_tables) {
-                loadFragment(new WaiterDashboardFragment(), false, "Table Status");
-                bottomNav.setSelectedItemId(R.id.nav_tables);
+                loadFragment(new WaiterDashboardFragment(), false, "Waiter Dashboard");
+                if ("MANAGER".equals(userRole)) bottomNav.setSelectedItemId(R.id.nav_tables);
             } else if (itemId == R.id.nav_orders) {
-                loadFragment(new ChefDashboardFragment(), false, "Kitchen Orders");
-                bottomNav.setSelectedItemId(R.id.nav_orders);
+                loadFragment(new ChefDashboardFragment(), false, "Chef Dashboard");
+                if ("MANAGER".equals(userRole)) bottomNav.setSelectedItemId(R.id.nav_orders);
             } else if (itemId == R.id.nav_user_management) {
                 loadFragment(new UserManagementFragment(), true, "User Management");
             } else if (itemId == R.id.nav_menu_management) {
                 loadFragment(new MenuManagementFragment(), true, "Menu Management");
+            } else if (itemId == R.id.nav_table_management) {
+                loadFragment(new com.example.quickserve.manager.TableManagementFragment(), true, "Table Management");
             } else if (itemId == R.id.nav_settings) {
-                loadFragment(new SettingsFragment(), true, "Settings");
+                // Pass user info to SettingsFragment
+                Fragment settingsFragment = new SettingsFragment();
+                Bundle args = new Bundle();
+                args.putString("USER_EMAIL", currentUser.getEmail());
+                args.putString("USER_ROLE", userRole);
+                settingsFragment.setArguments(args);
+                loadFragment(settingsFragment, true, "Settings");
             } else if (itemId == R.id.nav_logout) {
                 showLogoutConfirmationDialog();
             }
@@ -144,11 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void loadFragment(Fragment fragment, boolean addToBackStack, String title) {
         getSupportActionBar().setTitle(title);
-        var transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment);
-        if (addToBackStack) {
-            transaction.addToBackStack(title);
-        }
-        transaction.commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
     }
 
     private void showLogoutConfirmationDialog() {
@@ -156,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setTitle("Logout")
                 .setMessage("Are you sure you want to log out?")
                 .setPositiveButton("Yes", (dialog, which) -> {
+                    FirebaseAuth.getInstance().signOut();
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

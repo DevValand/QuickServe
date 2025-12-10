@@ -6,38 +6,38 @@
     android:padding="24dp">
 
     <TextView
+        android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add New Menu Item"
+        android:text="Add Menu Item"
         android:textColor="@color/primary"
         android:textSize="22sp"
         android:textStyle="bold" 
         android:layout_marginBottom="24dp"/>
 
     <EditText
-        android:id="@+id/et_new_item_name"
+        android:id="@+id/et_item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Item Name"
         android:inputType="textCapWords"
-        android:background="@drawable/edit_text_background"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
-
-    <EditText
-        android:id="@+id/et_new_item_price"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Price"
-        android:inputType="numberDecimal"
-        android:background="@drawable/edit_text_background"
         android:padding="12dp"
         android:layout_marginBottom="16dp"/>
 
     <Spinner
-        android:id="@+id/spinner_add_category"
+        android:id="@+id/spinner_item_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp" />
+        android:padding="12dp"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/et_item_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Price"
+        android:inputType="numberDecimal"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp"/>
 
 </LinearLayout>

@@ -1,27 +1,25 @@
 package com.example.quickserve.manager;
 
 public class User {
-    private String name;
+    private String id; // Firestore document ID
+    private String email;
     private String role;
 
-    public User(String name, String role) {
-        this.name = name;
+    // Required public no-arg constructor for Firebase
+    public User() {}
+
+    public User(String email, String role) {
+        this.email = email;
         this.role = role;
     }
 
-    public String getName() {
-        return name;
-    }
+    // Getters
+    public String getId() { return id; }
+    public String getEmail() { return email; }
+    public String getRole() { return role; }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    // Setters
+    public void setId(String id) { this.id = id; }
+    public void setEmail(String email) { this.email = email; }
+    public void setRole(String role) { this.role = role; }
 }

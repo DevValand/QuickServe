@@ -21,6 +21,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     public interface OnItemClickListener {
         void onItemClick(User user, int position);
+        void onDelete(User user, int position);
     }
 
     private ArrayList<User> userList;
@@ -63,7 +64,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         }
 
         public void bind(final User user, final OnItemClickListener listener, final int position) {
-            userName.setText(user.getName());
+            userName.setText(user.getEmail());
             userRole.setText(user.getRole());
 
             itemView.setOnClickListener(v -> listener.onItemClick(user, position));
@@ -71,13 +72,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             deleteIcon.setOnClickListener(v -> {
                 new AlertDialog.Builder(context)
                     .setTitle("Delete User")
-                    .setMessage("Are you sure you want to delete " + user.getName() + "?")
-                    .setPositiveButton("Delete", (dialog, which) -> {
-                        userList.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, userList.size());
-                        Toast.makeText(context, "User Deleted", Toast.LENGTH_SHORT).show();
-                    })
+                    .setMessage("Are you sure you want to delete " + user.getEmail() + "?")
+                    .setPositiveButton("Delete", (dialog, which) -> listener.onDelete(user, position))
                     .setNegativeButton("Cancel", null)
                     .show();
             });

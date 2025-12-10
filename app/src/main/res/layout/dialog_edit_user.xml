@@ -12,23 +12,29 @@
         android:textColor="@color/primary"
         android:textSize="22sp"
         android:textStyle="bold" 
-        android:layout_marginBottom="24dp"/>
+        android.layout_marginBottom="24dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Email"/>
     <EditText
-        android:id="@+id/et_edit_username"
+        android:id="@+id/et_edit_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"
-        android:inputType="text"
-        android:background="@drawable/edit_text_background"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:enabled="false"
+        android:textColor="@android:color/darker_gray" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Role"/>
     <Spinner
         android:id="@+id/spinner_edit_role"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="12dp" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Delete"
-            android:textColor="@color/danger_red"/>
+            android.textColor="@color/danger_red"/>
 
         <Button
             android:id="@+id/btn_update_user"

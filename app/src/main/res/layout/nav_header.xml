@@ -21,7 +21,14 @@
         android:id="@+id/nav_header_role"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Admin"
+        android:text="Role"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/nav_header_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="user@example.com"
         android:textColor="@color/white" />
 
 </LinearLayout>

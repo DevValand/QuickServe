@@ -32,14 +32,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <Button
-                    android:id="@+id/btn_edit_profile"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:text="Edit" />
+                <!-- Edit button removed -->
 
             </RelativeLayout>
 
@@ -47,14 +40,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Username" />
+                android:text="Role" />
 
             <TextView
-                android:id="@+id/tv_username"
+                android:id="@+id/tv_role"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="manager"
+                android:text="Manager"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 

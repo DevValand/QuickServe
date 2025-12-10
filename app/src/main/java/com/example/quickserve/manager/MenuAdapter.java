@@ -1,26 +1,29 @@
 package com.example.quickserve.manager;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickserve.R;
 
 import java.util.List;
-import java.util.Locale;
 
 public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder> {
 
-    public interface OnItemClickListener {
-        void onItemClick(MenuItem item, int position);
-    }
-
-    private List<MenuItem> menuList;
+    private final List<MenuItem> menuList;
     private final OnItemClickListener listener;
+    private Context context;
+
+    public interface OnItemClickListener {
+        void onEdit(MenuItem item);
+        void onDelete(MenuItem item);
+    }
 
     public MenuAdapter(List<MenuItem> menuList, OnItemClickListener listener) {
         this.menuList = menuList;
@@ -30,13 +33,15 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
     @NonNull
     @Override
     public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_menu, parent, false);
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.item_menu, parent, false);
         return new MenuViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MenuViewHolder holder, int position) {
-        holder.bind(menuList.get(position), listener, position);
+        MenuItem item = menuList.get(position);
+        holder.bind(item, listener);
     }
 
     @Override
@@ -45,41 +50,48 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
     }
 
     static class MenuViewHolder extends RecyclerView.ViewHolder {
-        ImageView itemIcon;
-        TextView itemName, itemCategory, itemPrice;
+        TextView name, category, price;
+        ImageView icon, deleteIcon;
 
         public MenuViewHolder(@NonNull View itemView) {
             super(itemView);
-            itemIcon = itemView.findViewById(R.id.iv_menu_item_icon);
-            itemName = itemView.findViewById(R.id.tv_menu_item_name);
-            itemCategory = itemView.findViewById(R.id.tv_menu_item_category);
-            itemPrice = itemView.findViewById(R.id.tv_menu_item_price);
+            name = itemView.findViewById(R.id.item_name);
+            category = itemView.findViewById(R.id.item_category);
+            price = itemView.findViewById(R.id.item_price);
+            icon = itemView.findViewById(R.id.item_icon);
+            deleteIcon = itemView.findViewById(R.id.iv_delete_menu);
         }
 
-        public void bind(final MenuItem menuItem, final OnItemClickListener listener, final int position) {
-            itemName.setText(menuItem.getName());
-            itemCategory.setText(menuItem.getCategory());
-            itemPrice.setText(String.format(Locale.getDefault(), "₹%.2f", menuItem.getPrice()));
+        public void bind(final MenuItem item, final OnItemClickListener listener) {
+            name.setText(item.getName());
+            category.setText(item.getCategory());
+            price.setText(String.format("₹%.2f", item.getPrice()));
+            icon.setImageResource(iconForCategory(item.getCategory()));
+            icon.setColorFilter(itemView.getResources().getColor(R.color.white));
 
-            switch (menuItem.getCategory()) {
-                case "Starters":
-                    itemIcon.setImageResource(R.drawable.ic_starter);
-                    break;
-                case "Main Course":
-                    itemIcon.setImageResource(R.drawable.ic_main_course);
-                    break;
-                case "Desserts":
-                    itemIcon.setImageResource(R.drawable.ic_dessert);
-                    break;
-                case "Beverages":
-                    itemIcon.setImageResource(R.drawable.ic_beverages);
-                    break;
+            itemView.setOnClickListener(v -> listener.onEdit(item));
+            itemView.setOnLongClickListener(v -> {
+                listener.onDelete(item);
+                return true;
+            });
+            itemView.findViewById(R.id.iv_edit_menu).setOnClickListener(v -> listener.onEdit(item));
+            deleteIcon.setOnClickListener(v -> listener.onDelete(item));
+        }
+
+        private int iconForCategory(String category) {
+            if (category == null) return R.drawable.ic_menu;
+            switch (category.trim().toLowerCase()) {
+                case "starters":
+                    return R.drawable.ic_starter;
+                case "main course":
+                    return R.drawable.ic_main_course;
+                case "desserts":
+                    return R.drawable.ic_dessert;
+                case "beverages":
+                    return R.drawable.ic_beverages;
                 default:
-                    itemIcon.setImageResource(R.drawable.ic_menu);
-                    break;
+                    return R.drawable.ic_menu;
             }
-            
-            itemView.setOnClickListener(v -> listener.onItemClick(menuItem, position));
         }
     }
 }
