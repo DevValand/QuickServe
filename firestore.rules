@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to get user role (with error handling)
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Helper function to check if user is Manager (handle both cases)
+    function isManager() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             (getUserRole() == 'Manager' || getUserRole() == 'MANAGER');
+    }
+    
+    // Helper function to check if user is Waiter
+    function isWaiter() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             getUserRole() == 'Waiter';
+    }
+    
+    // Helper function to check if user is Chef
+    function isChef() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             getUserRole() == 'Chef';
+    }
+    
+    // Helper function to check if user is Waiter or Chef
+    function isWaiterOrChef() {
+      return isWaiter() || isChef();
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // A user can read their own document (needed for login)
+      allow get: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Manager can read/write all users
+      allow read, write: if isManager();
+    }
+
+    // Menu items collection
+    match /menuItems/{itemId} {
+      // All authenticated users can read menu items
+      allow read: if isAuthenticated();
+      
+      // Only Manager can create/update/delete menu items
+      allow write: if isManager();
+    }
+
+    // Tables collection
+    match /tables/{tableId} {
+      // All authenticated users can read tables
+      allow read: if isAuthenticated();
+      
+      // Manager can create/update/delete tables
+      allow create, delete: if isManager();
+      
+      // Waiter and Chef can update tables
+      // For now, allow any update - we can restrict to status field later once it works
+      allow update: if isWaiterOrChef();
+      
+      // Manager can update any field
+      allow update: if isManager();
+    }
+
+    // Orders collection
+    match /orders/{orderId} {
+      // All authenticated users can read orders
+      allow read: if isAuthenticated();
+      
+      // Waiter can create orders
+      allow create: if isWaiter();
+      
+      // Chef can update orders (we can restrict to status field later)
+      allow update: if isChef();
+      
+      // Manager can do everything with orders
+      allow write: if isManager();
+    }
+  }
+}
+

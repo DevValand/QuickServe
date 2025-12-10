@@ -48,7 +48,11 @@ public class OrderRepository {
 
     @Nullable
     private static Order mapDoc(QueryDocumentSnapshot doc) {
-        Long tableNumber = doc.getLong("table_number");
+        // Try both field names for compatibility
+        Long tableNumber = doc.getLong("tableNumber");
+        if (tableNumber == null) {
+            tableNumber = doc.getLong("table_number"); // Fallback for old format
+        }
         String status = doc.getString("status");
         List<OrderLine> lines = new ArrayList<>();
         List<?> raw = (List<?>) doc.get("items");
@@ -101,8 +105,18 @@ public class OrderRepository {
             lines.add(new OrderLine(m.getName(), item.getQuantity()));
         }
 
+        // Create order in Firestore (collection will be auto-created if it doesn't exist)
         db.collection("orders").add(new Order(null, tableNumber, lines, "pending"))
-                .addOnSuccessListener(ref -> TableRepository.updateTableStatus(tableNumber, "order_taken"));
+                .addOnSuccessListener(ref -> {
+                    // Table status is already updated in TakeOrderActivity, 
+                    // but we ensure it's set here as well in case of any issues
+                    TableRepository.updateTableStatus(tableNumber, "order_taken");
+                })
+                .addOnFailureListener(e -> {
+                    // Even if order creation fails, we should still try to update table status
+                    // This ensures the table status reflects the user's action
+                    TableRepository.updateTableStatus(tableNumber, "order_taken");
+                });
     }
 
     public static void updateStatus(Order order, String newStatus) {

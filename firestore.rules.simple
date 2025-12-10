@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to get user role (with error handling)
+    function getUserRole() {
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
+      return userDoc != null && userDoc.data != null ? userDoc.data.role : null;
+    }
+    
+    // Helper function to check if user is Manager
+    function isManager() {
+      return isAuthenticated() && getUserRole() == 'Manager';
+    }
+    
+    // Helper function to check if user is Waiter
+    function isWaiter() {
+      return isAuthenticated() && getUserRole() == 'Waiter';
+    }
+    
+    // Helper function to check if user is Chef
+    function isChef() {
+      return isAuthenticated() && getUserRole() == 'Chef';
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow get: if isAuthenticated() && request.auth.uid == userId;
+      allow read, write: if isManager();
+    }
+
+    // Menu items collection
+    match /menuItems/{itemId} {
+      allow read: if isAuthenticated();
+      allow write: if isManager();
+    }
+
+    // Tables collection - SIMPLIFIED FOR TESTING
+    match /tables/{tableId} {
+      // All authenticated users can read tables
+      allow read: if isAuthenticated();
+      
+      // Manager can do everything
+      allow create, delete, update: if isManager();
+      
+      // Waiter and Chef can update tables (we'll restrict fields later)
+      // For now, allow any update to test if permissions work
+      allow update: if isWaiter() || isChef();
+    }
+
+    // Orders collection
+    match /orders/{orderId} {
+      allow read: if isAuthenticated();
+      allow create: if isWaiter();
+      allow update: if isChef() || isManager();
+      allow delete: if isManager();
+    }
+  }
+}
+

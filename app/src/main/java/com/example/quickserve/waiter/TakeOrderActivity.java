@@ -86,6 +86,10 @@ public class TakeOrderActivity extends AppCompatActivity {
         final AlertDialog dialog = builder.create();
 
         dialogView.findViewById(R.id.btn_confirm_order).setOnClickListener(v -> {
+            // Update table status to "order_taken" immediately when placing order
+            TableRepository.updateTableStatus(tableNumber, "order_taken");
+            
+            // Create the order in Firestore
             OrderRepository.createOrder(tableNumber, orderedItems);
 
             Toast.makeText(this, "Order for Table " + tableNumber + " placed successfully!", Toast.LENGTH_SHORT).show();
